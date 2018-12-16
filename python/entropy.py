@@ -44,5 +44,6 @@ def average():
 def ratio():
     info = os.stat('encoded/binary_'+novel).st_size
     compressed = info*8
-    original = os.stat('input/'+novel+'.txt').st_size*8
+    # original = os.stat('input/'+novel+'.txt').st_size*8
+    original = os.stat(ipt).st_size*8
     print('the compression ratio is', original/compressed)

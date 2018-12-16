@@ -1,8 +1,9 @@
 import sys
+from collect import *
 
 script, binary = sys.argv
 string = []
-with open('encoded/binary_'+binary, 'rb') as bi, open('input/new_'+binary+'.txt', 'w+', encoding='utf8') as file:
+with open('encoded/binary_'+binary, 'rb') as bi, openÍ(DATA_DIR+'/new_'+binary+'.txt', 'w+', encoding='utf8') as file:
     while True:
         s = bi.read(1)
         if s == b'':

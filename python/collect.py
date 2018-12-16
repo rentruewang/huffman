@@ -3,11 +3,14 @@ import sys
 
 output = '__output'
 script, novel = sys.argv
-ipt = 'input/'+novel+'.txt'
+# ipt = 'input/'+novel+'.txt'
+ipt = novel
+DATA_DIR, novel = novel.split('/')
+novel = novel.replace('.txt', '')
 if not os.path.exists(output):
     os.makedirs(output)
-if not os.path.exists('./input/'):
-    os.makedirs('./input/')
+# if not os.path.exists('./input/'):
+#     os.makedirs('./input/')
 if not os.path.exists('./encoded/'):
     os.makedirs('./encoded/')
 if not os.path.exists('./decoded/'):
