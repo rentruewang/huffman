@@ -5,7 +5,8 @@ output = '__output'
 script, novel = sys.argv
 # ipt = 'input/'+novel+'.txt'
 ipt = novel
-DATA_DIR, novel = novel.split('/')
+(*DATA_DIR, novel) = novel.split('/')
+DATA_DIR = os.path.expanduser(os.path.join(*DATA_DIR))
 novel = novel.replace('.txt', '')
 if not os.path.exists(output):
     os.makedirs(output)

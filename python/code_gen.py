@@ -3,7 +3,6 @@ import os
 from collect import *
 from tree_builder import *
 
-script, novel = sys.argv
 col = collector()
 stats = col.read()
 tree_root = p_binary_tree(stats).build_tree()

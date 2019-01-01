@@ -5,7 +5,6 @@ from collect import *
 from encoder import *
 from tree_builder import *
 
-script, novel = sys.argv
 enc = 'encoded/binary_'+novel
 result = 'decoded/res_'+novel+'.txt'
 

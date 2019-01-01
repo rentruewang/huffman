@@ -3,10 +3,12 @@ import java.io.File
 import kotlin.math.*
 import java.lang.*
 import kotlin.text.*
+/* The function for opening a file */
 fun openFile(name:String):String{
     fun read(n:String):String = File(n).inputStream().readBytes().toString(Charsets.UTF_8)
     return read(name)
 }
+/* Mapping from character to count per character */
 fun mapping(s:String):Map<Char,Int>{
     val map: MutableMap<Char,Int> = mutableMapOf()
     for (ch in openFile(s).toCharArray()){
@@ -18,8 +20,10 @@ fun mapping(s:String):Map<Char,Int>{
     }
     return map.toList().sortedBy {(_,v)->-v}.toMap()
 }
+/* The tree class itself */
 class Tree<E>(file:String){
-    val fileName:String = "../newest/input/"+file+".txt"
+    val fileName:String = file
+    /* The node class */
     class Node<E>constructor(ele: E?,par:Node<E>?,var l:Node<E>?,var r:Node<E>?){
         var isLeaf: Boolean = false
             get() = (left==null)&&(right==null)
@@ -34,14 +38,17 @@ class Tree<E>(file:String){
         var right = r
         var height:Int = if(this.isLeaf) 1 else max(this.left!!.height,this.right!!.height)
     }
+    /* Each and every entry */
     class Entry<K,V>(k: K, v: V){
         var containsSomething: Boolean = true
             get() = value==null
         var value = v
         var key = k
     }
+    /* Used to store all the entries, is sorted */
     var arr: MutableList<Node<Entry<Char,Int>>> = mutableListOf()
     private var ttl:Int = 0
+    /* Finally, constructor for class Tree */
     init{
         for ((ke,va) in mapping(fileName)){
             ttl+=va
@@ -53,6 +60,7 @@ class Tree<E>(file:String){
         }
         println("total "+ttl)
     }
+    /* merging nodes from the back of the list */
     fun merge():Node<Entry<Char,Int>>{
         val size = arr.size
         val newNode = Node(null,null,arr[size-2],arr[size-1])
@@ -60,6 +68,7 @@ class Tree<E>(file:String){
         arr[size-2].parent = newNode
         return newNode
     }
+    /* constructing a tree from a list */
     fun build():Node<Entry<Char,Int>>{
         var length = arr.size
         while (length > 1){
@@ -70,6 +79,7 @@ class Tree<E>(file:String){
         }
         return arr[0]
     }
+    /* up-heap-bubbling (perlocate up) */
     fun bubble(){
         var index = arr.size-1
         if(index<1)
@@ -94,12 +104,14 @@ class Tree<E>(file:String){
                 return
         }
     }
+    /* How many times a node is accessed, return children's sum if not leaf */
     fun times(node: Node<Entry<Char,Int>>):Int{
         if(node.isLeaf)
             return node.element!!.value
         return times(node.left!!)+times(node.right!!)
     }
     val dict: MutableMap<Char,String> = mutableMapOf()
+    /* depth first search */
     fun dfs(current:Node<Entry<Char,Int>>,id:String){
         if(current.isLeaf){
             dict[current.element!!.key] = id
@@ -108,6 +120,7 @@ class Tree<E>(file:String){
             dfs(current.right!!,id+"1")
         }
     }
+    /* The root of the tree */
     val root: Node<Entry<Char,Int>> = build()
     fun codes(){
         var cur = root
@@ -119,6 +132,7 @@ class Tree<E>(file:String){
     }
     val binaryFile = "binary/"+file
     val stream = openFile(fileName)
+    /* Write into a file */
     fun write(){
         val builder = StringBuilder()
         for(letter in stream.toCharArray()){
@@ -143,6 +157,7 @@ class Tree<E>(file:String){
         File(binaryFile).writeBytes(barr)
     }
     val decodedFile = "decoded/"+file+".txt"
+    /* Read from encoded file */
     fun decode(){
         val barr = File(binaryFile).readBytes()
         val reservoir = StringBuilder()
@@ -173,6 +188,7 @@ class Tree<E>(file:String){
         }
         File(decodedFile).writeText(sb.toString())
     }
+    /* A convenience class */
     fun bString(v:Int):String{
         val s = CharArray(8)
         var j = 7
@@ -189,6 +205,7 @@ class Tree<E>(file:String){
         return s.joinToString(separator = "")
     }
     fun unsigned(a:Byte):Int = a.toInt() and 0xFF
+    /* Calculating the entropy */
     fun entropy(){
         var ex = 0.0
         for ((_,value)in mapping(fileName)){

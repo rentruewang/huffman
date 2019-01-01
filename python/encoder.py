@@ -5,7 +5,6 @@ from code_gen import *
 from collect import *
 from tree_builder import *
 
-script, novel = sys.argv
 enc = 'encoded/binary_'+novel
 
 
