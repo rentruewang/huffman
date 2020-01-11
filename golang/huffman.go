@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -51,19 +52,26 @@ func main() {
 	fmt.Println("cost", total)
 }
 
-func walkRecursive(tree *node, huffman map[string]string, path string) {
+func walkRecursive(tree *node, huffman *concurrentMapStringString, path string, wg *sync.WaitGroup) {
+	defer wg.Done()
 	if tree.char == "" {
-		walkRecursive(tree.left, huffman, path+"0")
-		walkRecursive(tree.right, huffman, path+"1")
+		wg.Add(2)
+		go walkRecursive(tree.left, huffman, path+"0", wg)
+		go walkRecursive(tree.right, huffman, path+"1", wg)
 	} else {
-		huffman[tree.char] = path
+		huffman.Mutex.Lock()
+		huffman.table[tree.char] = path
+		huffman.Mutex.Unlock()
 	}
 }
 
 func walk(tree *node) map[string]string {
-	huffman := make(map[string]string)
-	walkRecursive(tree, huffman, "")
-	return huffman
+	var wg sync.WaitGroup
+	huffman := &concurrentMapStringString{table: make(map[string]string)}
+	wg.Add(1)
+	go walkRecursive(tree, huffman, "", &wg)
+	wg.Wait()
+	return huffman.table
 }
 
 func pop(heap []*node) ([]*node, *node) {
@@ -97,6 +105,10 @@ func downHeap(heap []*node, index int) {
 	}
 }
 
+type concurrentMapStringString struct {
+	sync.Mutex
+	table map[string]string
+}
 type node struct {
 	left, right *node
 	char        string
