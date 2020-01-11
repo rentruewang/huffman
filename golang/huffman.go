@@ -1,9 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"strings"
+)
 
 func main() {
-	str := "astala vista tasta"
+	file, err := os.Open(os.Args[1])
+	defer file.Close()
+	if err != nil {
+		panic("FileNotFound")
+	}
+	stream, err := ioutil.ReadAll(file)
+	str := strings.NewReplacer("\n", "").Replace(string(stream))
+
 	wordCount := make(map[string]int)
 	for _, char := range str {
 		wordCount[string(char)]++
