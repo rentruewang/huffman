@@ -7,5 +7,3 @@ providing an upper bound to the compressed file, just _one character_ above **en
 
 And an lower bound, of course, of **entropy** itself.
 
-It seems that VSCode and GitHub can't get the syntax highlight of a Kotlin file right...
-What a shame.
