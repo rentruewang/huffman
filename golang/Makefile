@@ -1,6 +1,9 @@
 MAIN = huffman.go
 
-all: build
+all: default
 
-build: $(MAIN)
+default: $(MAIN)
 	go build
+
+gcc: $(MAIN)
+	gccgo -O3 -o golang -static
