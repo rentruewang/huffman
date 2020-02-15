@@ -1,4 +1,3 @@
-mod lib;
 use std::cmp::{Eq, Ord, PartialEq, PartialOrd};
 use std::collections::{BinaryHeap, HashMap};
 use std::{env, fs};
