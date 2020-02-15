@@ -51,7 +51,7 @@ fn main() {
         };
 
         let nn = Node {
-            key: '\\',
+            key: '\0',
             val: first.val + second.val,
             left: Some(Box::new(first)),
             right: Some(Box::new(second)),
@@ -65,24 +65,27 @@ fn main() {
     println!("{:?}", result);
 }
 
+// move hash map out of this function after use
 fn traverse(node: Node<char, isize>) -> HashMap<char, String> {
     fn _traverse(node: Node<char, isize>, map: &mut HashMap<char, String>, path: &String) {
         let left = node.left;
         let right = node.right;
+
+        let pc = path.clone();
         if let Some(left) = left {
-            let path: String = path.clone() + "0";
-            _traverse(*left, map, &path);
+            _traverse(*left, map, &(pc + "0"));
         } else {
-            map.insert(node.key, path.clone());
+            map.insert(node.key, pc);
         }
+
+        let pc = path.clone();
         if let Some(right) = right {
-            let path: String = path.clone() + "1";
-            _traverse(*right, map, &path);
+            _traverse(*right, map, &(pc + "1"));
         } else {
-            map.insert(node.key, path.clone());
+            map.insert(node.key, pc);
         }
     }
     let mut path_list: HashMap<char, String> = HashMap::new();
     _traverse(node, &mut path_list, &String::from(""));
-    return path_list;
+    path_list
 }
