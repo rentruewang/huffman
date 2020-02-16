@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/heap"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -22,25 +23,34 @@ func main() {
 	}
 	fmt.Println(wordCount)
 
-	queue := make([]*node, 0)
+	queue := make(nodelist, 0)
 	for key, val := range wordCount {
 		queue = append(queue, &node{char: key, count: val})
 	}
-	for i := (len(queue) / 2) - 1; i >= 0; i-- {
-		downHeap(queue, i)
-	}
+	// for i := (len(queue) / 2) - 1; i >= 0; i-- {
+	// 	downHeap(queue, i)
+	// }
+	// for i, total := 0, len(queue)-1; i < total; i++ {
+	// 	var first, second *node
+	// 	queue, first = pop(queue)
+	// 	queue, second = pop(queue)
+	// 	n := &node{left: first, right: second, char: "", count: first.count + second.count}
+	// 	idx := len(queue)
+	// 	queue = append(queue, n)
+	// 	for queue[idx].count < queue[idx/2].count {
+	// 		queue[idx], queue[idx/2] = queue[idx/2], queue[idx]
+	// 		idx = idx / 2
+	// 	}
+	// }
+
+	heap.Init(&queue)
 	for i, total := 0, len(queue)-1; i < total; i++ {
-		var first, second *node
-		queue, first = pop(queue)
-		queue, second = pop(queue)
+		first := heap.Pop(&queue).(*node)
+		second := heap.Pop(&queue).(*node)
 		n := &node{left: first, right: second, char: "", count: first.count + second.count}
-		idx := len(queue)
-		queue = append(queue, n)
-		for queue[idx].count < queue[idx/2].count {
-			queue[idx], queue[idx/2] = queue[idx/2], queue[idx]
-			idx = idx / 2
-		}
+		heap.Push(&queue, n)
 	}
+
 	huffman := walk(queue[0])
 	fmt.Println(huffman)
 
@@ -66,39 +76,64 @@ func walk(tree *node) map[string]string {
 	return huffman
 }
 
-func pop(heap []*node) ([]*node, *node) {
-	head := heap[0]
-	heap[0], heap[len(heap)-1] = heap[len(heap)-1], heap[0]
-	heap = heap[:len(heap)-1]
-	downHeap(heap, 0)
-	return heap, head
-}
+// func pop(heap []*node) ([]*node, *node) {
+// 	head := heap[0]
+// 	heap[0], heap[len(heap)-1] = heap[len(heap)-1], heap[0]
+// 	heap = heap[:len(heap)-1]
+// 	downHeap(heap, 0)
+// 	return heap, head
+// }
 
-func downHeap(heap []*node, index int) {
-	left, right := 2*index+1, 2*index+2
-	switch {
-	case left >= len(heap):
-	case right >= len(heap):
-		if heap[left].count < heap[index].count {
-			heap[index], heap[left] = heap[left], heap[index]
-			downHeap(heap, left)
-		}
-	default:
-		var smaller int
-		if heap[left].count < heap[right].count {
-			smaller = left
-		} else {
-			smaller = right
-		}
-		if heap[smaller].count < heap[index].count {
-			heap[index], heap[smaller] = heap[smaller], heap[index]
-			downHeap(heap, smaller)
-		}
-	}
-}
+// func downHeap(heap []*node, index int) {
+// 	left, right := 2*index+1, 2*index+2
+// 	switch {
+// 	case left >= len(heap):
+// 	case right >= len(heap):
+// 		if heap[left].count < heap[index].count {
+// 			heap[index], heap[left] = heap[left], heap[index]
+// 			downHeap(heap, left)
+// 		}
+// 	default:
+// 		var smaller int
+// 		if heap[left].count < heap[right].count {
+// 			smaller = left
+// 		} else {
+// 			smaller = right
+// 		}
+// 		if heap[smaller].count < heap[index].count {
+// 			heap[index], heap[smaller] = heap[smaller], heap[index]
+// 			downHeap(heap, smaller)
+// 		}
+// 	}
+// }
 
 type node struct {
 	left, right *node
 	char        string
 	count       int
+}
+
+type nodelist []*node
+
+// Len for heap package
+func (n nodelist) Len() int { return len(n) }
+
+// Less for heap package
+func (n nodelist) Less(i, j int) bool { return n[i].count < n[j].count }
+
+// Swap for heap package
+func (n nodelist) Swap(i, j int) { n[i], n[j] = n[j], n[i] }
+
+// Push for heap package
+func (n *nodelist) Push(elem interface{}) {
+	*n = append(*n, elem.(*node))
+}
+
+// Pop for heap package
+func (n *nodelist) Pop() interface{} {
+	old := *n
+	ln := len(old)
+	x := old[ln-1]
+	*n = old[:ln-1]
+	return x
 }
