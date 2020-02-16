@@ -25,7 +25,7 @@ func main() {
 
 	queue := make(nodelist, 0)
 	for key, val := range wordCount {
-		queue = append(queue, &node{char: key, count: val})
+		queue = append(queue, node{char: key, count: val})
 	}
 	// for i := (len(queue) / 2) - 1; i >= 0; i-- {
 	// 	downHeap(queue, i)
@@ -45,13 +45,13 @@ func main() {
 
 	heap.Init(&queue)
 	for i, total := 0, len(queue)-1; i < total; i++ {
-		first := heap.Pop(&queue).(*node)
-		second := heap.Pop(&queue).(*node)
-		n := &node{left: first, right: second, char: "", count: first.count + second.count}
+		first := heap.Pop(&queue).(node)
+		second := heap.Pop(&queue).(node)
+		n := node{left: &first, right: &second, char: "", count: first.count + second.count}
 		heap.Push(&queue, n)
 	}
 
-	huffman := walk(queue[0])
+	huffman := walk(&queue[0])
 	fmt.Println(huffman)
 
 	total := 0
@@ -113,7 +113,7 @@ type node struct {
 	count       int
 }
 
-type nodelist []*node
+type nodelist []node
 
 // Len for heap package
 func (n nodelist) Len() int { return len(n) }
@@ -126,7 +126,7 @@ func (n nodelist) Swap(i, j int) { n[i], n[j] = n[j], n[i] }
 
 // Push for heap package
 func (n *nodelist) Push(elem interface{}) {
-	*n = append(*n, elem.(*node))
+	*n = append(*n, elem.(node))
 }
 
 // Pop for heap package
