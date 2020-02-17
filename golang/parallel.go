@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -46,19 +47,31 @@ func main() {
 	fmt.Println("cost", total)
 }
 
-func walkRecursive(tree *node, huffman map[string]string, path string) {
+func walkRecursive(tree *node, huffman map[string]string, path string, prl *parallel) {
+	defer prl.Done()
 	if tree.char == "" {
-		walkRecursive(tree.left, huffman, path+"0")
-		walkRecursive(tree.right, huffman, path+"1")
+		prl.Add(2)
+		go walkRecursive(tree.left, huffman, path+"0", prl)
+		go walkRecursive(tree.right, huffman, path+"1", prl)
 	} else {
+		prl.Lock()
 		huffman[tree.char] = path
+		prl.Unlock()
 	}
 }
 
 func walk(tree *node) map[string]string {
 	huffman := make(map[string]string)
-	walkRecursive(tree, huffman, "")
+	var prl parallel
+	prl.Add(1)
+	go walkRecursive(tree, huffman, "", &prl)
+	prl.Wait()
 	return huffman
+}
+
+type parallel struct {
+	sync.WaitGroup
+	sync.Mutex
 }
 
 type node struct {
