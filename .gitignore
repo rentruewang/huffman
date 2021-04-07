@@ -5,7 +5,7 @@
 
 .DS_Store
 __*
-*coded
+.vscode/
 
 input/
-
+reference/
