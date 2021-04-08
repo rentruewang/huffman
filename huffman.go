@@ -90,7 +90,7 @@ func MakeHuffmanTree(content string) HuffmanTree {
 		second := heap.Pop(&list).(HuffmanNode)
 
 		// And then merge them, the new node has a larger count
-		merged := HuffmanNode{Left: &first, Right: &second, Token: rune(0), Count: first.Count + second.Count}
+		merged := HuffmanNode{Left: &first, Right: &second, Token: NoRune, Count: first.Count + second.Count}
 
 		// Then insert the new node back to the original list
 		heap.Push(&list, merged)
@@ -142,20 +142,21 @@ func (hf HuffmanTree) GenerateByPath(dict map[string]string, path string) {
 }
 
 // HuffmanList is used for building up the HuffmanTree
-// So it's very short lived. RIP.
+// So it's very short lived. RIP
 type HuffmanList []HuffmanNode
 
 // MakeHuffmanList creates a new HuffmanList with given length.
-func MakeHuffmanList(length int) HuffmanList {
-	return make([]HuffmanNode, length)
-}
+func MakeHuffmanList(length int) HuffmanList { return make([]HuffmanNode, length) }
 
 // Append adds a new HuffmanNode to HuffmanList
 // The reason copy is used here is that the node is not that big anyways,
 // and it makes the API simpler
-func (hl *HuffmanList) Append(hn HuffmanNode) {
-	*hl = append(*hl, hn)
-}
+func (hl *HuffmanList) Append(node HuffmanNode) { *hl = append(*hl, node) }
+
+// Index returns the value of HuffmanList at a certain index
+// I created this method because if someone were to extend this package,
+// HuffmanList without this method would be useless
+func (hl HuffmanList) Index(idx int) HuffmanNode { return hl[idx] }
 
 // The following functions Len, Less, Swap are defined on HuffmanList,
 // but if an interface requires these three methods,
@@ -169,8 +170,8 @@ func (hl *HuffmanList) Append(hn HuffmanNode) {
 func (hl HuffmanList) Len() int { return len(hl) }
 
 // Less is defined for sort, heap package.
-// It is desired that the heap is a min heap. So Less(i, j) uses < operator.
-// It would be clearer in creating the HuffmanTree.
+// It is desired that the heap is a min heap. So Less(i, j) uses the normal`<` operator.
+// It would be clearer why we want a min heap in creating the HuffmanTree.
 func (hl HuffmanList) Less(i, j int) bool { return hl[i].Count < hl[j].Count }
 
 // Swap is defined for sort, heap package.
