@@ -1,11 +1,2 @@
-*
-!*/
-!*.*
-!Makefile
-
 .DS_Store
-__*
 .vscode/
-
-input/
-reference/

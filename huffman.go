@@ -2,10 +2,6 @@ package main
 
 import (
 	"container/heap"
-	"io"
-	"log"
-	"os"
-	"strings"
 )
 
 // NoRune is not a rune
@@ -37,23 +33,6 @@ type HuffmanNode struct {
 // see the link below
 // https://groups.google.com/g/golang-nuts/c/qf76N-uDcHA/m/DTCDNgaF_p4J
 type HuffmanTree = *HuffmanNode
-
-// MakeHuffmanTreeFromFile creates a completely new HuffmanTree from a file
-func MakeHuffmanTreeFromFile(file *os.File) HuffmanTree {
-	// As of Go 1.16, the function stays in io package
-	data, err := io.ReadAll(file)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	// Still going to do some processing before using
-	tmpData := string(data)
-
-	// Newlines are not very printable, so I'll just get rid of it.
-	content := strings.ReplaceAll(tmpData, "\n", " ")
-
-	return MakeHuffmanTree(content)
-}
 
 // MakeHuffmanTree creates a completely new HuffmanTree from a string
 func MakeHuffmanTree(content string) HuffmanTree {
@@ -139,6 +118,15 @@ func (hf HuffmanTree) GenerateByPath(dict map[string]string, path string) {
 	if right := hf.Right; right != nil {
 		hf.Right.GenerateByPath(dict, path+"1")
 	}
+}
+
+// Huffman is a convenient method to create
+// a huffman tree and the compute the huffman codes
+// Basically, it takes in a document string,
+// then compute the huffman codes for you
+func Huffman(content string) map[string]string {
+	ht := MakeHuffmanTree(content)
+	return ht.Huffman()
 }
 
 // HuffmanList is used for building up the HuffmanTree
