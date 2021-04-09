@@ -1,8 +1,6 @@
 package main
 
-import (
-	"container/heap"
-)
+import "container/heap"
 
 // NoRune is not a rune
 const NoRune rune = rune(0)
@@ -29,7 +27,8 @@ type HuffmanNode struct {
 // HuffmanTree is, guess what, a pointer to the root HuffmanNode of the tree!
 // HuffmanTree is an alias because if it weren't, the spec (in the following line)
 // https://golang.org/ref/spec#Method_declarations
-// says that it you can't define methods on it. The reason for the outrageous decision is actually pretty logical,
+// says that it you can't define methods on it.
+// The reason for the outrageous decision is actually pretty logical,
 // see the link below
 // https://groups.google.com/g/golang-nuts/c/qf76N-uDcHA/m/DTCDNgaF_p4J
 type HuffmanTree = *HuffmanNode
@@ -40,7 +39,7 @@ func MakeHuffmanTree(content string) HuffmanTree {
 	wordCount := make(map[rune]int)
 
 	for _, char := range content {
-		// If previous doesn't exist, the map defaults to returning 0
+		// If key doesn't exist, the map defaults to returning 0
 		// And since this map is used to count numbers of encounters
 		// Simply put ++ works fine as the value 'inserted' into the map is 1
 		wordCount[char]++
@@ -57,21 +56,31 @@ func MakeHuffmanTree(content string) HuffmanTree {
 		list.Append(HuffmanNode{Left: nil, Right: nil, Token: word, Count: count})
 	}
 
-	// The list will be built into a heap
+	// The list will be built into a min heap
 	heap.Init(&list)
 
-	// The reason total is equal to huffmanList.Len() - 1 upfront
-	// is because later on the length of the list changes because of Pops and Pushes
-	for i, total := 0, list.Len()-1; i < total; i++ {
-		// Take the two nodes where the counts are the smallest
+	// Run for list.Len() - 1 iterations
+	for i := list.Len() - 1; i > 0; i-- {
+		// Retrieve the two nodes where the counts are the smallest
 		// Also, I'm pretty sure they are still HuffmanNode's
 		first := heap.Pop(&list).(HuffmanNode)
 		second := heap.Pop(&list).(HuffmanNode)
 
-		// And then merge them, the new node has a larger count
-		merged := HuffmanNode{Left: &first, Right: &second, Token: NoRune, Count: first.Count + second.Count}
+		// Why create a parent with `Count` the sum of its children?
+		// Well, this way the count of the root of a tree
+		// will be the sum of all its leaf nodes,
+		// since all internal nodes being the sum of their children,
+		// will then propagate the sums to their parents.
+		// And the above condition holds for all sub-trees in the tree.
+		merged := HuffmanNode{
+			Left:  &first,
+			Right: &second,
+			Token: NoRune,
+			Count: first.Count + second.Count,
+		}
 
 		// Then insert the new node back to the original list
+		// The list looks like a list of trees after the first heap.Push
 		heap.Push(&list, merged)
 	}
 
@@ -81,6 +90,8 @@ func MakeHuffmanTree(content string) HuffmanTree {
 		panic("unreachable")
 	}
 
+	// HuffmanTree is a *HuffmanNode
+	// The 'type conversion' is just for readability
 	return HuffmanTree(&list[0])
 }
 
@@ -101,7 +112,7 @@ func (hf HuffmanTree) GenerateByPath(dict map[string]string, path string) {
 	// If hf is an internal node
 	// then there is nothing to store because characters will only be present in the leaf nodes
 	if hf.Token != NoRune {
-		// string is easier to use
+		// type string is easier to display and use
 		token := string(hf.Token)
 		dict[token] = path
 	}
@@ -134,7 +145,7 @@ func Huffman(content string) map[string]string {
 type HuffmanList []HuffmanNode
 
 // MakeHuffmanList creates a new HuffmanList with given length.
-func MakeHuffmanList(length int) HuffmanList { return make([]HuffmanNode, length) }
+func MakeHuffmanList(length int) HuffmanList { return make(HuffmanList, length) }
 
 // Append adds a new HuffmanNode to HuffmanList
 // The reason copy is used here is that the node is not that big anyways,
