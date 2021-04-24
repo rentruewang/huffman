@@ -15,31 +15,31 @@ const EmptyString string = ""
 func main() {
 	var err error
 
-	var infname, outfname string
+	var inputName, outputName string
 
-	flag.StringVar(&infname, "i", EmptyString, "The file to be encoded into huffman coding")
-	flag.StringVar(&outfname, "o", EmptyString, "The file where encoded strings can be saved")
+	flag.StringVar(&inputName, "i", EmptyString, "The file to be encoded into huffman coding")
+	flag.StringVar(&outputName, "o", EmptyString, "The file where encoded strings can be saved")
 
 	flag.Parse()
 
-	var infile, outfile *os.File
+	var inputFile, outputFile *os.File
 
 	// Read the input file, then handle the file to MakeHuffmanTreeFromFile
-	if infile, err = os.Open(infname); err != nil {
+	if inputFile, err = os.Open(inputName); err != nil {
 		log.Fatalln("No such input file!")
 	}
-	defer infile.Close()
+	defer inputFile.Close()
 
 	// Output is a json file.
-	if outfile, err = os.Create(outfname); err != nil {
+	if outputFile, err = os.Create(outputName); err != nil {
 		log.Fatalln("No such output file!")
 	}
-	defer outfile.Close()
+	defer outputFile.Close()
 
 	var data []byte
 
 	// As of Go 1.16, the function stays in io package
-	data, err = io.ReadAll(infile)
+	data, err = io.ReadAll(inputFile)
 	if err != nil {
 		log.Fatalln("There is something terrifying in the input file!")
 	}
@@ -61,7 +61,7 @@ func main() {
 	}
 
 	var n int
-	if n, err = outfile.Write(data); err != nil {
+	if n, err = outputFile.Write(data); err != nil {
 		log.Fatalf("Read %d lines. Buffer overflow!\n", n)
 	}
 }

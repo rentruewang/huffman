@@ -1,9 +1,8 @@
 package main
 
-import "container/heap"
-
-// NoRune is not a rune
-const NoRune rune = rune(0)
+import (
+	"container/heap"
+)
 
 // Any can be anything!
 type Any = interface{}
@@ -11,18 +10,35 @@ type Any = interface{}
 // HuffmanNode is actually a normal node, but huffman.
 // It is created to aid the process of creating Huffman trees.
 type HuffmanNode struct {
-	// Left points to the left HuffmanNode
-	Left *HuffmanNode
-	// Right points to the right HuffmanNode
-	Right *HuffmanNode
-	// Token holds what the node represents.
-	// If the node is an internal node, the the token is empty.
+	// left points to the left HuffmanNode.
+	left *HuffmanNode
+	// right points to the right HuffmanNode.
+	right *HuffmanNode
+	// token holds what the node represents.
+	// If the node is an internal node, the the token is rune(0), representing '\0'.
 	// Or else the token is representative of a particular token in the document.
-	// Please see Wikipedia for the defienition of a token
-	Token rune
+	// Please see Wikipedia for the definition of a token
+	token rune
 	// Number of times the token is counted in the document
-	Count int
+	count int
 }
+
+// hasLeft shows if the node has a left child.
+func (hn HuffmanNode) hasLeft() bool { return hn.left != nil }
+
+// hasRight shows if the node has a right child.
+func (hn HuffmanNode) hasRight() bool { return hn.right != nil }
+
+// ValidToken shows if a token is valid for non-package level access.
+// An invalid token is an implementation detail and should not be visible to users.
+func (hn HuffmanNode) ValidToken() bool { return hn.token != rune(0) }
+
+// Token represented by the HuffmanNode. The field is not modified ever after the creation of the huffman node.
+func (hn HuffmanNode) Token() rune { return hn.token }
+
+// Count is the number of times a rune is present in the document.
+// If the token is a ValidToken, the count is not modified after the creation of the huffman node.
+func (hn HuffmanNode) Count() int { return hn.count }
 
 // HuffmanTree is, guess what, a pointer to the root HuffmanNode of the tree!
 // HuffmanTree is an alias because if it weren't, the spec (in the following line)
@@ -35,7 +51,7 @@ type HuffmanTree = *HuffmanNode
 
 // MakeHuffmanTree creates a completely new HuffmanTree from a string
 func MakeHuffmanTree(content string) HuffmanTree {
-	// wordCount will serve as a multiset to count every occurence of a rune
+	// wordCount will serve as a multiset to count every occurrence of a rune
 	wordCount := make(map[rune]int)
 
 	for _, char := range content {
@@ -53,7 +69,7 @@ func MakeHuffmanTree(content string) HuffmanTree {
 	for word, count := range wordCount {
 		// The left and right nodes are currently nil because they are not yet connected.
 		// Will do so in the next line.
-		list.Append(HuffmanNode{Left: nil, Right: nil, Token: word, Count: count})
+		list.Append(HuffmanNode{left: nil, right: nil, token: word, count: count})
 	}
 
 	// The list will be built into a min heap
@@ -73,10 +89,10 @@ func MakeHuffmanTree(content string) HuffmanTree {
 		// will then propagate the sums to their parents.
 		// And the above condition holds for all sub-trees in the tree.
 		merged := HuffmanNode{
-			Left:  &first,
-			Right: &second,
-			Token: NoRune,
-			Count: first.Count + second.Count,
+			left:  &first,
+			right: &second,
+			token: rune(0),
+			count: first.count + second.count,
 		}
 
 		// Then insert the new node back to the original list
@@ -108,12 +124,12 @@ func (hf HuffmanTree) Huffman() map[string]string {
 }
 
 // GenerateByPath generates the huffman codes for an existing HuffmanTree
-func (hf HuffmanTree) GenerateByPath(dict map[string]string, path string) {
+func (ht HuffmanTree) GenerateByPath(dict map[string]string, path string) {
 	// If hf is an internal node
 	// then there is nothing to store because characters will only be present in the leaf nodes
-	if hf.Token != NoRune {
+	if ht.ValidToken() {
 		// type string is easier to display and use
-		token := string(hf.Token)
+		token := string(ht.token)
 		dict[token] = path
 	}
 
@@ -122,12 +138,12 @@ func (hf HuffmanTree) GenerateByPath(dict map[string]string, path string) {
 	// Every left visit (visit left child) a '0' is appended to the code
 	// Every right visit (visit right child) a '1' is appended to the code
 
-	if left := hf.Left; left != nil {
-		hf.Left.GenerateByPath(dict, path+"0")
+	if ht.hasLeft() {
+		ht.left.GenerateByPath(dict, path+"0")
 	}
 
-	if right := hf.Right; right != nil {
-		hf.Right.GenerateByPath(dict, path+"1")
+	if ht.hasRight() {
+		ht.right.GenerateByPath(dict, path+"1")
 	}
 }
 
@@ -171,7 +187,7 @@ func (hl HuffmanList) Len() int { return len(hl) }
 // Less is defined for sort, heap package.
 // It is desired that the heap is a min heap. So Less(i, j) uses the normal`<` operator.
 // It would be clearer why we want a min heap in creating the HuffmanTree.
-func (hl HuffmanList) Less(i, j int) bool { return hl[i].Count < hl[j].Count }
+func (hl HuffmanList) Less(i, j int) bool { return hl[i].count < hl[j].count }
 
 // Swap is defined for sort, heap package.
 func (hl HuffmanList) Swap(i, j int) { hl[i], hl[j] = hl[j], hl[i] }
