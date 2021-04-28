@@ -1,6 +1,7 @@
 # Huffman
 
-## An efficient encoding method
+![Check](https://github.com/r3ntru3w4n9/huffman/actions/workflows/check.yaml/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/r3ntru3w4n9/huffman)](https://goreportcard.com/report/github.com/r3ntru3w4n9/huffman)
 
 Huffman encoding is an optimal, greedy algorithm over a random sequence. It can guarentee an upper bound on the length of the encoded output to be as much as **1 + entropy** of the original text sequence. All with a minimal runtime. It is also a lossless compression method as well. It does so by applying a tranformation of the original text sequence to make tokens appearing more often take up less memory, while allowing tokens that appear relatively sparse taking up more space.
 

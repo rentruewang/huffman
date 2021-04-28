@@ -85,11 +85,11 @@ func MakeHuffmanTree(content string) HuffmanTree {
 }
 
 // Huffman generates huffman codes by recursively calling GenerateByPath
-func (hf HuffmanTree) Huffman() map[string]string {
+func (ht HuffmanTree) Huffman() map[string]string {
 	dict := make(map[string]string)
 
 	// The root node's path == ""
-	hf.GenerateByPath(dict, "")
+	ht.GenerateByPath(dict, "")
 
 	return dict
 }
