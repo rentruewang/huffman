@@ -1,6 +1,9 @@
 package main
 
-import "container/heap"
+import (
+	"container/heap"
+	"sort"
+)
 
 // Any is anything
 type Any = interface{}
@@ -124,6 +127,12 @@ func Huffman(content string) map[string]string {
 // HuffmanList is used for building up the HuffmanTree
 type HuffmanList []HuffmanNode
 
+// HuffmanList is compliant with `sort.Interface`
+var _ sort.Interface = HuffmanList{}
+
+// *HuffmanList is compliant with `heap.Interface`
+var _ heap.Interface = (*HuffmanList)(nil)
+
 // MakeHuffmanList creates a new HuffmanList with given length
 func MakeHuffmanList(length int) HuffmanList { return make(HuffmanList, length) }
 
@@ -152,11 +161,8 @@ func (hl HuffmanList) Swap(i, j int) { hl[i], hl[j] = hl[j], hl[i] }
 
 // Push is defined for heap package
 func (hl *HuffmanList) Push(elem Any) {
-	if node, ok := elem.(HuffmanNode); ok {
-		*hl = append(*hl, node)
-		return
-	}
-	panic("unreachable")
+	node := elem.(HuffmanNode)
+	*hl = append(*hl, node)
 }
 
 // Pop is defined for heap package
