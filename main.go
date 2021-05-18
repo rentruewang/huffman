@@ -10,16 +10,20 @@ import (
 )
 
 func main() {
-	var err error
-
-	var inputName, outputName string
+	var (
+		err        error
+		inputName  string
+		inputFile  *os.File
+		outputName string
+		outputFile *os.File
+		data       []byte
+		n          int
+	)
 
 	flag.StringVar(&inputName, "i", "", "The file to be encoded into huffman coding")
 	flag.StringVar(&outputName, "o", "", "The file where encoded strings can be saved")
 
 	flag.Parse()
-
-	var inputFile, outputFile *os.File
 
 	if inputFile, err = os.Open(inputName); err != nil {
 		log.Fatalln("No such input file!")
@@ -31,14 +35,10 @@ func main() {
 	}
 	defer outputFile.Close()
 
-	var data []byte
-
-	// As of Go 1.16, the function stays in io package
-	data, err = io.ReadAll(inputFile)
-	if err != nil {
+	// As of Go 1.16, the function ioutil.ReadAll is renamed to io.ReadAll
+	if data, err = io.ReadAll(inputFile); err != nil {
 		log.Fatalln("There is something terrifying in the input file!")
 	}
-
 	tmpData := string(data)
 
 	// Newlines are not very printable, so don't care about it.
@@ -50,8 +50,6 @@ func main() {
 	if data, err = json.Marshal(codes); err != nil {
 		log.Fatalln("map[string]string to json fails!")
 	}
-
-	var n int
 
 	if n, err = outputFile.Write(data); err != nil {
 		log.Fatalf("Read %d lines. Buffer overflow!\n", n)
