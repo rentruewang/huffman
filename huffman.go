@@ -130,6 +130,9 @@ type HuffmanList []HuffmanNode
 // HuffmanList is compliant with `sort.Interface`
 var _ sort.Interface = HuffmanList{}
 
+// *HuffmanList is compliant with `sort.Interface`
+var _ sort.Interface = (*HuffmanList)(nil)
+
 // *HuffmanList is compliant with `heap.Interface`
 var _ heap.Interface = (*HuffmanList)(nil)
 
