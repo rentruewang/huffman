@@ -22,15 +22,18 @@ func main() {
 
 	flag.StringVar(&inputName, "i", "", "The file to be encoded into huffman coding")
 	flag.StringVar(&outputName, "o", "", "The file where encoded strings can be saved")
-
 	flag.Parse()
 
-	if inputFile, err = os.Open(inputName); err != nil {
+	if strings.ToLower(inputName) == "stdin" {
+		inputFile = os.Stdin
+	} else if inputFile, err = os.Open(inputName); err != nil {
 		log.Fatalln("No such input file!")
 	}
 	defer inputFile.Close()
 
-	if outputFile, err = os.Create(outputName); err != nil {
+	if strings.ToLower(outputName) == "stdout" {
+		outputFile = os.Stdout
+	} else if outputFile, err = os.Create(outputName); err != nil {
 		log.Fatalln("No such output file!")
 	}
 	defer outputFile.Close()

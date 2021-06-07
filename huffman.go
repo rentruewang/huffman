@@ -8,7 +8,7 @@ import (
 // Any is anything
 type Any = interface{}
 
-// HuffmanNode a node in a Huffman tree
+// HuffmanNode a node in a Huffman tree.
 type HuffmanNode struct {
 	// left points to the left HuffmanNode.
 	left *HuffmanNode
@@ -38,20 +38,20 @@ func (hn HuffmanNode) Token() rune { return hn.token }
 // If the token is a `ValidToken`, the count is not modified after the creation of the huffman node.
 func (hn HuffmanNode) Count() int { return hn.count }
 
-// HuffmanTree is a pointer to the root HuffmanNode of the tree
+// HuffmanTree is a pointer to the root HuffmanNode of the tree.
 // HuffmanTree cannot be a newtype because if it is, the spec (in the following line)
 // https://golang.org/ref/spec#Method_declarations
 // says that it you can't define methods on it.
 // https://groups.google.com/g/golang-nuts/c/qf76N-uDcHA/m/DTCDNgaF_p4J
 type HuffmanTree = *HuffmanNode
 
-// MakeHuffmanTree creates a new HuffmanTree from a string
+// MakeHuffmanTree creates a new HuffmanTree from a string.
 func MakeHuffmanTree(content string) HuffmanTree {
-	// wordCount is a multiset
+	// wordCount is a multiset.
 	wordCount := make(map[rune]int)
 
 	for _, char := range content {
-		// If key doesn't exist, the map defaults to returning 0
+		// If key doesn't exist, the map defaults to returning 0.
 		wordCount[char]++
 	}
 
@@ -63,11 +63,11 @@ func MakeHuffmanTree(content string) HuffmanTree {
 	heap.Init(&list)
 
 	for i := list.Len() - 1; i > 0; i-- {
-		// Retrieve the smallest (in `count`) two nodes
+		// Retrieve the smallest (in `count`) two nodes.
 		first := heap.Pop(&list).(HuffmanNode)
 		second := heap.Pop(&list).(HuffmanNode)
 
-		// Every parent having `count` the sum of its children's `count`s
+		// Every parent having `count` the sum of its children's `count`s.
 		// will ensure that the node of a tree would be the sum of its leaves.
 		merged := HuffmanNode{
 			left:  &first,
@@ -79,7 +79,7 @@ func MakeHuffmanTree(content string) HuffmanTree {
 		heap.Push(&list, merged)
 	}
 
-	// After n-1 merges there would only be one element left in the list
+	// After n-1 merges there would only be one element left in the list.
 	if list.Len() != 1 {
 		panic("unreachable")
 	}
@@ -87,18 +87,16 @@ func MakeHuffmanTree(content string) HuffmanTree {
 	return HuffmanTree(&list[0])
 }
 
-// Huffman generates huffman codes by recursively calling GenerateByPath
+// Huffman generates huffman codes by recursively appending '0' or '1' to the huffman node's code.
 func (ht HuffmanTree) Huffman() map[string]string {
+	// The root node's path == "".
 	dict := make(map[string]string)
-
-	// The root node's path == ""
-	ht.GenerateByPath(dict, "")
-
+	ht.genByPath(dict, "")
 	return dict
 }
 
-// GenerateByPath generates the huffman codes for an existing HuffmanTree
-func (ht HuffmanTree) GenerateByPath(dict map[string]string, path string) {
+// genByPath generates the huffman codes for an existing HuffmanTree.
+func (ht HuffmanTree) genByPath(dict map[string]string, path string) {
 	// Tokens will only be present in the leaf nodes
 	if ht.ValidToken() {
 		token := string(ht.token)
@@ -110,39 +108,39 @@ func (ht HuffmanTree) GenerateByPath(dict map[string]string, path string) {
 	// Every right visit (visit right child) a '1' is appended to the code.
 
 	if ht.hasLeft() {
-		ht.left.GenerateByPath(dict, path+"0")
+		ht.left.genByPath(dict, path+"0")
 	}
 
 	if ht.hasRight() {
-		ht.right.GenerateByPath(dict, path+"1")
+		ht.right.genByPath(dict, path+"1")
 	}
 }
 
-// Huffman takes in a document string and compute the huffman codes into a `map[string]string`
+// Huffman takes in a document string and compute the huffman codes into a `map[string]string`.
 func Huffman(content string) map[string]string {
 	ht := MakeHuffmanTree(content)
 	return ht.Huffman()
 }
 
-// HuffmanList is used for building up the HuffmanTree
+// HuffmanList is used for building up the HuffmanTree.
 type HuffmanList []HuffmanNode
 
-// HuffmanList is compliant with `sort.Interface`
+// HuffmanList is compliant with `sort.Interface`.
 var _ sort.Interface = HuffmanList{}
 
-// *HuffmanList is compliant with `sort.Interface`
+// *HuffmanList is compliant with `sort.Interface`.
 var _ sort.Interface = (*HuffmanList)(nil)
 
-// *HuffmanList is compliant with `heap.Interface`
+// *HuffmanList is compliant with `heap.Interface`.
 var _ heap.Interface = (*HuffmanList)(nil)
 
-// MakeHuffmanList creates a new HuffmanList with given length
+// MakeHuffmanList creates a new HuffmanList with given length.
 func MakeHuffmanList(length int) HuffmanList { return make(HuffmanList, length) }
 
-// Append adds a new HuffmanNode to HuffmanList
+// Append adds a new HuffmanNode to HuffmanList.
 func (hl *HuffmanList) Append(node HuffmanNode) { *hl = append(*hl, node) }
 
-// Index returns the value of HuffmanList at a certain index
+// Index returns the value of HuffmanList at a certain index.
 func (hl HuffmanList) Index(idx int) HuffmanNode { return hl[idx] }
 
 // The following functions Len, Less, Swap are defined on HuffmanList,
@@ -152,29 +150,26 @@ func (hl HuffmanList) Index(idx int) HuffmanNode { return hl[idx] }
 // End result is: sort package can use both HuffmanList and *HuffmanList,
 // and heap package can only use *HuffmanList.
 
-// Len is defined for sort, heap package.
+// Len shows the length of the list. It is defined for sort, heap package.
 func (hl HuffmanList) Len() int { return len(hl) }
 
-// Less is defined for sort, heap package.
-// Compare two nodes based on `Count()`
+// Less compares two nodes based on `Count()`. It is defined for sort, heap package.
 func (hl HuffmanList) Less(i, j int) bool { return hl[i].count < hl[j].count }
 
-// Swap is defined for sort, heap package.
+// Swap swaps two elements. It is defined for sort, heap package.
 func (hl HuffmanList) Swap(i, j int) { hl[i], hl[j] = hl[j], hl[i] }
 
-// Push is defined for heap package
+// Push adds an element to the tail of a list. It is defined for heap package.
 func (hl *HuffmanList) Push(elem Any) {
-	node := elem.(HuffmanNode)
-	*hl = append(*hl, node)
+	hl.Append(elem.(HuffmanNode))
 }
 
-// Pop is defined for heap package
-func (hl *HuffmanList) Pop() (last Any) {
+// Pop pops the last element from a list. It is defined for heap package.
+func (hl *HuffmanList) Pop() (elem Any) {
 	list := *hl
-	index := len(list) - 1
+	last := len(list) - 1
 
-	// Takes out the last element and shorten existing list
-	*hl, last = list[:index], list[index]
-
-	return last
+	// Takes out the last element and shorten existing list.
+	*hl, elem = list[:last], list[last]
+	return
 }
