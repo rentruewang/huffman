@@ -9,12 +9,13 @@ jobs:
         uses: actions/checkout@v2
 
       # Golang part
-      - name: 🏗️ go runtime
-        uses: actions/setup-go@v2
+      - name: 🏗️ 🏃 clang-format
+        uses: DoozyX/clang-format-lint-action@v0.13
         with:
-          go-version: ^1.13.1
-      - name: 🏃 go fmt
-        run: go fmt
+          source: ./java
+          extensions: java
+          clangFormatVersion: 13
+          inplace: True
 
       # Add and commit all
       - name: ⬆️ Add and Commit
@@ -22,6 +23,6 @@ jobs:
         with:
           author_name: "github-actions[bot]"
           author_email: "github-actions[bot]@users.noreply.github.com"
-          message: "🤖 R3nTru3W4n9 thinks you forgot to format your code!"
+          message: "🤖 RenTrueWang thinks you forgot to format your code!"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

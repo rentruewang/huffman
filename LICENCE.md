@@ -1,7 +1,7 @@
 Modified BSD License
 ====================
 
-_Copyright © `2021`, `RenChu Wang`_  
+_Copyright © `2022`, `RenChu Wang`_  
 _All rights reserved._
 
 Redistribution and use in source and binary forms, with or without
