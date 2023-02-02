@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-// Any is anything
+// Any is anything.
 type Any = interface{}
 
 // HuffmanNode a node in a Huffman tree.
@@ -18,7 +18,7 @@ type HuffmanNode struct {
 	// If the node is internal, then the token is rune(0), representing '\0'.
 	// Or else the token is a particular token in the document.
 	token rune
-	// count is the number of times the token is present in the document
+	// count is the number of times the token is present in the document.
 	count int
 }
 
@@ -31,7 +31,8 @@ func (hn HuffmanNode) hasRight() bool { return hn.right != nil }
 // ValidToken shows if a token is valid for non-package level access.
 func (hn HuffmanNode) ValidToken() bool { return hn.token != rune(0) }
 
-// Token represented by the HuffmanNode. The field is not modified ever after the creation of the huffman node.
+// Token represented by the HuffmanNode.
+// The field is not modified ever after the creation of the huffman node.
 func (hn HuffmanNode) Token() rune { return hn.token }
 
 // Count is the number of times a rune is present in the document.
@@ -97,7 +98,7 @@ func (ht HuffmanTree) Huffman() map[string]string {
 
 // genByPath generates the huffman codes for an existing HuffmanTree.
 func (ht HuffmanTree) genByPath(dict map[string]string, path string) {
-	// Tokens will only be present in the leaf nodes
+	// Tokens will only be present in the leaf nodes.
 	if ht.ValidToken() {
 		token := string(ht.token)
 		dict[token] = path

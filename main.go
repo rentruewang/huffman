@@ -24,6 +24,7 @@ func main() {
 	flag.StringVar(&outputName, "o", "", "The file where encoded strings can be saved")
 	flag.Parse()
 
+	// Read from `stdin` if specified.
 	if strings.ToLower(inputName) == "stdin" {
 		inputFile = os.Stdin
 	} else if inputFile, err = os.Open(inputName); err != nil {
@@ -31,6 +32,7 @@ func main() {
 	}
 	defer inputFile.Close()
 
+	// Write to `stdout` if specified.
 	if strings.ToLower(outputName) == "stdout" {
 		outputFile = os.Stdout
 	} else if outputFile, err = os.Create(outputName); err != nil {
