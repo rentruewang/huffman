@@ -1,3 +1,3 @@
-module github.com/r3ntru3w4n9/huffman
+module github.com/rentruewang/huffman
 
 go 1.19
